@@ -38,6 +38,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import absolute_import
 
+import argparse
 import os
 import sys
 import tensorflow as tf
@@ -46,6 +47,12 @@ slim = tf.contrib.slim
 # Import model files
 import model
 from dataset import BKVOCDataset
+
+# parser arguments
+parser = argparse.ArgumentParser(description="Simple Does It! GrabCut training")
+parser.add_argument('--data-path', type=str, 
+                    default="/home/ubuntu/datasets/VOC2012_berkeley_aug/benchmark_RELEASE/dataset")
+args = parser.parse_args()
 
 # Model paths
 # Pre-trained VGG_16 downloaded from http://download.tensorflow.org/models/vgg_16_2016_08_28.tar.gz
@@ -68,10 +75,8 @@ boundaries = [10000, 15000, 25000, 30000, 40000]
 values = [ini_lr, ini_lr * 0.1, ini_lr, ini_lr * 0.1, ini_lr, ini_lr * 0.1]
 
 # Load the Berkeley-augmented Pascal VOC 2012 segmentation dataset
-if sys.platform.startswith("win"):
-    dataset_root = "E:/datasets/bk-voc/benchmark_RELEASE/dataset"
-else:
-    dataset_root = '/media/EDrive/datasets/bk-voc/benchmark_RELEASE/dataset'
+dataset_root = args.data_path
+assert os.path.exists(dataset_root)
 dataset = BKVOCDataset(phase='train', dataset_root=dataset_root)
 
 # Display dataset configuration

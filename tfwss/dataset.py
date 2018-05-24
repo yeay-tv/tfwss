@@ -52,10 +52,9 @@ from bboxes import extract_bbox
 from segment import rect_mask, grabcut
 from visualize import draw_masks
 
-if sys.platform.startswith("win"):
-    _BK_VOC_DATASET = "E:/datasets/bk-voc/benchmark_RELEASE/dataset"
-else:
-    _BK_VOC_DATASET = '/media/EDrive/datasets/bk-voc/benchmark_RELEASE/dataset'
+_BK_VOC_DATASET = '/home/ubuntu/datasets/VOC2012_berkeley_aug/benchmark_RELEASE/dataset'
+
+assert os.path.exists(_BK_VOC_DATASET)
 
 _DBG_TRAIN_SET = -1
 
@@ -115,6 +114,9 @@ class BKVOCDataset(object):
             self._train_idx = np.arange(self.train_size)
             np.random.seed(1)
             np.random.shuffle(self._train_idx)
+        elif self._phase == "prepare":
+            #self._options['use_grabcut_labels'] = True
+            pass
         else:
             self._options['use_grabcut_labels'] = False
             self._load_img_mask_pairs_file(self._test_img_mask_pairs_file)
@@ -206,6 +208,8 @@ class BKVOCDataset(object):
                     self._img_mask_pairs.append((img_path, mask_path))
                     self._mask_bboxes.append((int(splits[2]), int(splits[3]), int(splits[4]), int(splits[5])))
                 return True
+        else:
+            print("Could not find {}".format(img_mask_pairs_path))
         return False
     
     
@@ -451,11 +455,6 @@ class BKVOCDataset(object):
                     bboxes = [bbox]
                     masks = [self.pred_masks_path + '/' + os.path.basename(img_mask_pair[1])]
 
-# def test():
-#     dataset = BKVOCDataset()
-#     dataset.print_config()
-#     # WARNING: THE NEXT LINE WILL FORCE REGENERATION OF INTERMEDIARY FILES
-#     # dataset.prepare()
-#
-# if __name__ == '__main__':
-#     test()
+if __name__ == '__main__':
+    dataset = BKVOCDataset(phase="prepare")
+    dataset.prepare()

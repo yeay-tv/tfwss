@@ -43,11 +43,7 @@ ckpt_name = 'vgg_16_4chan_' + segnet_stream
 ckpt_path = 'models/' + ckpt_name + '/' + ckpt_name + '.ckpt-' + str(max_training_iters)
 
 # Load the Berkeley-augmented Pascal VOC 2012 segmentation dataset
-if sys.platform.startswith("win"):
-    dataset_root = "E:/datasets/bk-voc/benchmark_RELEASE/dataset"
-else:
-    dataset_root = '/media/EDrive/datasets/bk-voc/benchmark_RELEASE/dataset'
-dataset = BKVOCDataset(phase='test', dataset_root=dataset_root)
+dataset = BKVOCDataset(phase='test')
 
 # Display dataset configuration
 dataset.print_config()
