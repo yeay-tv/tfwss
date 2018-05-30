@@ -33,7 +33,7 @@ def rect_mask(shape, bbox):
         mask = np.expand_dims(mask, axis=-1)
     return mask
 
-def grabcut(img_path, bbox):
+def grabcut(img_path, bbox, x1y1wh=False):
     """Use Grabcut to create a binary segmentation of an image within a bounding box
     Param:
         img: path to input image astype('uint8')
@@ -43,6 +43,9 @@ def grabcut(img_path, bbox):
     Based on:
         https://docs.opencv.org/trunk/d8/d83/tutorial_py_grabcut.html
     """
+    if x1y1wh:
+        y1, x1, y2, x2 = int(bbox[1]), int(bbox[0]), int(bbox[1] + bbox[3]), int(bbox[0] + bbox[2])
+        bbox = [y1, x1, y2, x2]
     img = cv.imread(img_path)
     width, height = bbox[3] - bbox[1], bbox[2] - bbox[0]
     if width * height < _MIN_AREA:
@@ -70,3 +73,6 @@ def grabcut(img_path, bbox):
         cv.grabCut(img, gct, rect, bgdModel,fgdModel, _ITER_COUNT, cv.GC_INIT_WITH_RECT)
         mask = np.where((gct == 2) | (gct == 0), 0, 255).astype('uint8')
     return mask
+
+def mask2segments(mask):
+    return cv.findContour(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)[2].flatten().tolist()
